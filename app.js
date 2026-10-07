@@ -4,6 +4,19 @@ const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":
 const pct = (x, d = 1) => x == null || isNaN(x) ? "–" : (100 * x).toFixed(d) + "%";
 const PAL = ["#0f766e", "#2563eb", "#d97706", "#7c3aed", "#db2777", "#475569", "#0891b2", "#65a30d", "#dc2626", "#a16207"];
 const S = { user: null, meta: null, f: { month: "", category: "", region: "", city: "", dealer: "" }, brand: "", view: "dashboard", rivals: null, dealerId: null, dsort: ["share", -1], dpage: 0, dq: "", level: "region" };
+const IC = { dashboard: '<rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/>',
+  categories: '<path d="M12 2 2 7l10 5 10-5-10-5Z"/><path d="m2 17 10 5 10-5"/><path d="m2 12 10 5 10-5"/>',
+  competitors: '<path d="M16 3h5v5"/><path d="M8 3H3v5"/><path d="m21 3-7 7"/><path d="m3 3 7 7"/><path d="M16 21h5v-5"/><path d="M8 21H3v-5"/><path d="m21 21-7-7"/><path d="m3 21 7-7"/>',
+  trend: '<path d="m22 7-8.5 8.5-5-5L2 17"/><path d="M16 7h6v6"/>',
+  "geo:city": '<path d="M6 22V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v18"/><path d="M2 22h20"/><path d="M10 7h4M10 11h4M10 15h4"/>',
+  "geo:region": '<path d="M3 7l6-3 6 3 6-3v13l-6 3-6-3-6 3V7Z"/><path d="M9 4v13M15 7v13"/>',
+  "geo:national": '<circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15 15 0 0 1 0 20 15 15 0 0 1 0-20Z"/>',
+  dealers: '<path d="M3 9 4.5 4h15L21 9"/><path d="M3 9a3 3 0 0 0 6 0 3 3 0 0 0 6 0 3 3 0 0 0 6 0"/><path d="M5 12v8h14v-8"/><path d="M10 20v-5h4v5"/>',
+  reports: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6"/><path d="M12 18v-6"/><path d="m9 15 3 3 3-3"/>',
+  collect: '<path d="M12 20h9"/><path d="M16.4 3.6a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/>',
+  users: '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.9"/><path d="M16 3.1a4 4 0 0 1 0 7.8"/>',
+  logout: '<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/>' };
+const icon = k => `<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${IC[k] || ""}</svg>`;
 const NAV = [["Intelligence", [["dashboard", "Executive Dashboard"], ["categories", "Category Visibility"], ["competitors", "Brand vs Competitor"], ["trend", "Monthly Trend"]]],
   ["Benchmarks", [["geo:city", "City Benchmark"], ["geo:region", "Regional Benchmark"], ["geo:national", "National Benchmark"]]],
   ["Dealers", [["dealers", "Dealer Network (230)"]]], ["Outputs", [["reports", "Reports / Export"]]]];
@@ -62,7 +75,7 @@ function renderLogin(err = "", mode = "in") {
   const up = mode === "up";
   $("#app").innerHTML = `<div class="login"><form class="box" id="lf"><div class="logo"><i>▮</i> IBTSO Retail Intelligence</div><h2>${up ? "Create account" : "Sign in"}</h2><p>Brand visibility intelligence across Oman's 230 Independent Retailers.</p>
   ${up ? `<label>Full name</label><input id="nm" autocomplete="name"><label>Brand</label><select id="br">${["LG", "Samsung", "Midea", "Toshiba", "Philips", "Haier", "Hitachi", "Gree", "Panasonic", "Bosch", "Hisense", "TCL", "Sony"].map(b => `<option>${b}</option>`).join("")}</select>` : ""}
-  <label>Email</label><input id="em" value="${up ? "" : "lg@demo.com"}" autocomplete="username"><label>Password</label><input id="pw" type="password" value="${up ? "" : "demo123"}" autocomplete="${up ? "new-password" : "current-password"}">
+  <label>Email</label><input id="em" value="${up ? "" : "admin@ibtso.com"}" autocomplete="username"><label>Password</label><input id="pw" type="password" value="${up ? "" : "ibtso123"}" autocomplete="${up ? "new-password" : "current-password"}">
   <div class="err" id="er">${err}</div><button class="btn" style="width:100%">${up ? "Create account" : "Sign in"}</button>
   <div style="text-align:center;margin-top:12px;font-size:13px">${up ? "Already have an account?" : "New to the platform?"} <a href="#" id="sw" style="color:var(--acc);font-weight:600">${up ? "Sign in" : "Sign up"}</a></div>
   ${up ? `<div class="demo">New accounts start as <b>Brand Viewer</b> (brand-level data only). An IBTSO admin can upgrade the role.</div>` : `<div class="demo"><b>Demo accounts</b> (click to fill)<br>
@@ -82,9 +95,12 @@ function go(v) { S.view = v; location.hash = v; render(); }
 async function render() {
   const nav = NAV.map(([h, it]) => [h, it.filter(([k]) => allowed(k.split(":")[0]))]).filter(x => x[1].length).concat(can("collect") ? [["IBTSO Data Team", [["collect", "Data Collection"], ["users", "User Management"]]]] : []);
   const [v, arg] = S.view.split(":");
-  $("#app").innerHTML = `<div class="shell"><button class="menu noprint" id="mb">☰ Menu</button><nav id="nv"><div class="logo"><i>▮</i> IBTSO</div>${nav.map(([h, items]) => `<h6>${h}</h6>${items.map(([k, l]) => `<a data-v="${k}" class="${S.view === k || (S.view === "dealer" && k === "dealers") ? "on" : ""}">${l}</a>`).join("")}`).join("")}
-  <div class="acct">Signed in as<b>${esc(S.user.name)}</b>${ROLES[S.user.role].label}${can("any") ? "" : " · " + esc(S.user.brand)}<br>${esc(S.user.email)}<br><a id="lo">Sign out</a></div></nav>
-  <main><div id="head"></div><div id="flt"></div><div id="view"><div class="card">Loading…</div></div></main></div>`;
+  const u = S.user, ini = u.name.split(/\s+/).map(w => w[0]).join("").slice(0, 2).toUpperCase();
+  $("#app").innerHTML = `<div class="shell"><nav id="nv"><div class="logo"><i>▮</i><span>IBTSO<small>Retail Intelligence</small></span></div>${nav.map(([h, items]) => `<h6>${h}</h6>${items.map(([k, l]) => `<a data-v="${k}" class="${S.view === k || (S.view === "dealer" && k === "dealers") ? "on" : ""}">${icon(k)}<span>${l}</span></a>`).join("")}`).join("")}</nav>
+  <div class="col"><header class="topbar noprint"><button class="mbtn" id="mb" aria-label="Menu">☰</button><div class="grow"></div>
+  <div class="who"><span class="av">${esc(ini)}</span><span class="wt"><b>${esc(u.name)}</b><small>${ROLES[u.role].label}${can("any") ? "" : " · " + esc(u.brand)}</small></span></div>
+  <button class="signout" id="lo">${icon("logout")}<span>Sign out</span></button></header>
+  <main><div id="head"></div><div id="flt"></div><div id="view"><div class="card">Loading…</div></div></main></div></div>`;
   document.querySelectorAll("nav a[data-v]").forEach(a => a.onclick = () => go(a.dataset.v));
   $("#lo").onclick = logout; $("#mb").onclick = () => $("#nv").classList.toggle("open"); filters();
   if (!allowed(v)) { head("Access restricted", ""); $("#view").innerHTML = `<div class="card"><h3>🔒 Your role (${ROLES[S.user.role].label}) cannot open this screen.</h3><div class="sub">Ask an IBTSO admin to upgrade your access.</div></div>`; return; }
